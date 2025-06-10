@@ -1,8 +1,10 @@
 "use client";
 
+import { useRef, useState, useEffect, UIEvent } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const youtubeVideos = [
   {
@@ -23,6 +25,42 @@ const youtubeVideos = [
 ];
 
 export default function HomePage() {
+
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(false);
+
+  const checkArrows = () => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      const isScrollable = container.scrollWidth > container.clientWidth;
+      setShowLeftArrow(isScrollable && container.scrollLeft > 0);
+      setShowRightArrow(isScrollable && container.scrollLeft < container.scrollWidth - container.clientWidth - 1);
+    }
+  };
+
+  useEffect(() => {
+    checkArrows();
+    window.addEventListener('resize', checkArrows);
+    return () => window.removeEventListener('resize', checkArrows);
+  }, []);
+
+  const handleScroll = (direction: 'left' | 'right') => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      const scrollAmount = container.clientWidth * 0.8;
+      container.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
+
+  const handleOnScroll = (event: UIEvent<HTMLDivElement>) => {
+    checkArrows();
+  };
+
   return (
     <div className={`bg-[#1A2A44] min-h-screen`}>
       <main className="text-white py-20">
@@ -62,40 +100,66 @@ export default function HomePage() {
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-12">
             연주 영상 다시보기
           </h2>
+          <div className="relative">
 
-          <div className="flex space-x-8 overflow-x-auto pb-4">
-            {youtubeVideos.map((video) => (
-              <a
-                href={`https://www.youtube.com/watch?v=${video.youtubeVideoId}`}
-                key={video.id}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block group relative rounded-lg shadow-lg w-4/5 sm:w-1/2 md:w-1/3 lg:w-1/4 flex-shrink-0"
+            {showLeftArrow && (
+              <Button
+                variant="outline"
+                size="icon"
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/20 hover:bg-white/30 border-none rounded-full"
+                onClick={() => handleScroll('left')}
               >
-                <div className="overflow-hidden rounded-lg">
-                  <Image
-                    src={`https://img.youtube.com/vi/${video.youtubeVideoId}/hqdefault.jpg`}
-                    alt={`${video.title} a thumbnail`}
-                    width={500}
-                    height={375}
-                    className="object-cover w-full h-full aspect-video transition-all duration-300 ease-in-out group-hover:scale-105 group-hover:brightness-75"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300">
-                    <svg className="w-16 h-16 text-white opacity-0 group-hover:opacity-100 transform scale-75 group-hover:scale-100 transition-all duration-300"
-                         fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                      <path fillRule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                            clipRule="evenodd"></path>
-                    </svg>
+                <ChevronLeft className="h-6 w-6 text-white" />
+              </Button>
+            )}
+
+            <div
+              ref={scrollContainerRef}
+              onScroll={handleOnScroll}
+              className="flex space-x-8 overflow-x-auto pb-4 no-scrollbar"
+            >
+              {youtubeVideos.map((video) => (
+                <a
+                  href={`https://www.youtube.com/watch?v=${video.youtubeVideoId}`}
+                  key={video.id}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block group relative rounded-lg shadow-lg w-4/5 sm:w-1/2 md:w-1/3 lg:w-1/4 flex-shrink-0"
+                >
+                  <div className="overflow-hidden rounded-lg">
+                    <Image
+                      src={`https://img.youtube.com/vi/${video.youtubeVideoId}/hqdefault.jpg`}
+                      alt={`${video.title} a thumbnail`}
+                      width={500}
+                      height={375}
+                      className="object-cover w-full h-full aspect-video transition-all duration-300 ease-in-out group-hover:scale-105 group-hover:brightness-75"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300">
+                      <svg className="w-16 h-16 text-white opacity-0 group-hover:opacity-100 transform scale-75 group-hover:scale-100 transition-all duration-300"
+                        fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                          clipRule="evenodd"></path>
+                      </svg>
+                    </div>
                   </div>
-                </div>
-              </a>
-            ))}
+                </a>
+              ))}
+            </div>
+
+            {showRightArrow && (
+              <Button
+                variant="outline"
+                size="icon"
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/20 hover:bg-white/30 border-none rounded-full"
+                onClick={() => handleScroll('right')}
+              >
+                <ChevronRight className="h-6 w-6 text-white" />
+              </Button>
+            )}
           </div>
         </div>
       </section>
-
-
     </div>
   );
 }
