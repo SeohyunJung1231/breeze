@@ -9,7 +9,6 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 
-// 폼 데이터의 초기 상태
 const INITIAL_DATA = {
     name: "",
     instrument: "",
@@ -17,12 +16,18 @@ const INITIAL_DATA = {
     history: "",
 };
 
+enum FormStep {
+    BASIC_INFO = 1,
+    MOTIVATION,
+    HISTORY,
+    CONFIRMATION
+}
+
 export function ApplyForm() {
-    const [step, setStep] = useState(1);
-    // 'application-draft'라는 키로 localStorage에 폼 데이터를 저장합니다.
+    const [step, setStep] = useState<FormStep>(FormStep.BASIC_INFO);
     const [formData, setFormData] = useLocalStorage("application-draft", INITIAL_DATA);
 
-    const totalSteps = 4; // 이름/악기 -> 동기 -> 이력 -> 확인
+    const totalSteps = Object.keys(FormStep).length / 2;
 
     function updateFields(fields: Partial<typeof INITIAL_DATA>) {
         setFormData((prev) => ({ ...prev, ...fields }));
@@ -43,7 +48,7 @@ export function ApplyForm() {
         console.log(formData);
         // 제출 후 캐시 삭제
         setFormData(INITIAL_DATA);
-        setStep(1);
+        setStep(FormStep.BASIC_INFO);
     }
 
     return (
@@ -55,35 +60,35 @@ export function ApplyForm() {
             </CardHeader>
             <form onSubmit={handleSubmit}>
                 <CardContent className="space-y-4">
-                    {step === 1 && (
+                    {step === FormStep.BASIC_INFO && (
                         <div className="space-y-4">
                             <h3 className="font-semibold">기본 정보</h3>
                             <div>
                                 <Label htmlFor="name">이름</Label>
-                                <Input id="name" value={formData.name} onChange={e => updateFields({ name: e.target.value })} required />
+                                <Input id="name" className="mt-2" value={formData.name} onChange={e => updateFields({ name: e.target.value })} required />
                             </div>
                             <div>
                                 <Label htmlFor="instrument">악기</Label>
-                                <Input id="instrument" value={formData.instrument} onChange={e => updateFields({ instrument: e.target.value })} required />
+                                <Input id="instrument" className="mt-2" value={formData.instrument} onChange={e => updateFields({ instrument: e.target.value })} required />
                             </div>
                         </div>
                     )}
 
-                    {step === 2 && (
+                    {step === FormStep.MOTIVATION && (
                         <div>
                             <Label htmlFor="motivation">지원 동기</Label>
-                            <Textarea id="motivation" value={formData.motivation} onChange={e => updateFields({ motivation: e.target.value })} required rows={5} />
+                            <Textarea id="motivation" className="mt-2" value={formData.motivation} onChange={e => updateFields({ motivation: e.target.value })} required rows={5} />
                         </div>
                     )}
 
-                    {step === 3 && (
+                    {step === FormStep.HISTORY && (
                         <div>
                             <Label htmlFor="history">주요 연주 이력</Label>
-                            <Textarea id="history" value={formData.history} onChange={e => updateFields({ history: e.target.value })} required rows={8} placeholder="예: 2024년 예술의전당 협연..." />
+                            <Textarea id="history" className="mt-2" value={formData.history} onChange={e => updateFields({ history: e.target.value })} required rows={8} placeholder="예: 2024년 예술의전당 협연..." />
                         </div>
                     )}
 
-                    {step === 4 && (
+                    {step === FormStep.CONFIRMATION && (
                         <div className="space-y-4">
                             <h3 className="font-semibold">최종 확인</h3>
                             <p><strong>이름:</strong> {formData.name}</p>
@@ -93,7 +98,7 @@ export function ApplyForm() {
                         </div>
                     )}
                 </CardContent>
-                <CardFooter className="flex justify-between">
+                <CardFooter className="flex justify-between mt-6">
                     {step > 1 && (
                         <Button type="button" variant="ghost" onClick={prevStep}>이전</Button>
                     )}
