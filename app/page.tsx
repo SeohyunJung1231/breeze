@@ -4,7 +4,8 @@ import { useRef, useState, useEffect, UIEvent } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { PursuitsSection } from '@/components/pursuits'
+import { ChevronLeft, ChevronRight, Headphones, Heart, Users } from 'lucide-react';
 
 const youtubeVideos = [
   {
@@ -22,6 +23,24 @@ const youtubeVideos = [
     title: '(Encore) Tchaikovsky : Danse hongroise',
     youtubeVideoId: '0M4USR5_T-s',
   },
+];
+
+const pursuits = [
+  {
+    text: '파트간 음악을 서로 들으려 해요',
+    Icon: Headphones,
+    color: 'bg-accent-sky',
+  },
+  {
+    text: '각자의 음악 생활을 적극적으로 응원해요!',
+    Icon: Heart,
+    color: 'bg-accent-rose',
+  },
+  {
+    text: '음악 동료를 만날 수 있어요',
+    Icon: Users,
+    color: 'bg-accent-teal',
+  }
 ];
 
 export default function HomePage() {
@@ -160,6 +179,11 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+
+      <div style={{ backgroundColor: '#1A2A44', minHeight: '100vh' }}>
+        <PursuitsSection />
+      </div>
     </div>
   );
 }
