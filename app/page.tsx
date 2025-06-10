@@ -4,11 +4,27 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 
-const naviBlue = '#1A2A44';     // Logo navy blue color
+const youtubeVideos = [
+  {
+    id: 1,
+    title: 'Gounod : Petite Symphonie',
+    youtubeVideoId: 'IvahAeJb3JU&t=321s',
+  },
+  {
+    id: 2,
+    title: 'Smetana : Vltava (Die Moldau)',
+    youtubeVideoId: '5LuPE9PrzR8',
+  },
+  {
+    id: 3,
+    title: '(Encore) Tchaikovsky : Danse hongroise',
+    youtubeVideoId: '0M4USR5_T-s',
+  },
+];
 
 export default function HomePage() {
   return (
-    <div className={`bg-[${naviBlue}] min-h-screen`}>
+    <div className={`bg-[#1A2A44] min-h-screen`}>
       <main className="text-white py-20">
         <div className="container mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
           {/* Left Section (Text) */}
@@ -39,6 +55,47 @@ export default function HomePage() {
           </div>
         </div>
       </main>
+
+
+      <section className="py-20 md:py-24">
+        <div className="mx-auto px-6 md:px-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-12">
+            연주 영상 다시보기
+          </h2>
+
+          <div className="flex space-x-8 overflow-x-auto pb-4">
+            {youtubeVideos.map((video) => (
+              <a
+                href={`https://www.youtube.com/watch?v=${video.youtubeVideoId}`}
+                key={video.id}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block group relative rounded-lg shadow-lg w-4/5 sm:w-1/2 md:w-1/3 lg:w-1/4 flex-shrink-0"
+              >
+                <div className="overflow-hidden rounded-lg">
+                  <Image
+                    src={`https://img.youtube.com/vi/${video.youtubeVideoId}/hqdefault.jpg`}
+                    alt={`${video.title} a thumbnail`}
+                    width={500}
+                    height={375}
+                    className="object-cover w-full h-full aspect-video transition-all duration-300 ease-in-out group-hover:scale-105 group-hover:brightness-75"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300">
+                    <svg className="w-16 h-16 text-white opacity-0 group-hover:opacity-100 transform scale-75 group-hover:scale-100 transition-all duration-300"
+                         fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                      <path fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                            clipRule="evenodd"></path>
+                    </svg>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+
     </div>
   );
 }
